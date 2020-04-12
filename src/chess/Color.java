@@ -1,6 +1,8 @@
 /*
-    Piece color constants
+    chess.Piece color constants
  */
+
+package chess;
 
 public class Color {
 

@@ -2,12 +2,14 @@
     Stores information on board state
  */
 
+package chess;
+
 import java.util.Map;
 import java.util.HashMap;
 
 public class Board {
 
-    // Board dimensions
+    // chess.Board dimensions
     public static final int WIDTH = 8;
     public static final int HEIGHT = 8;
 

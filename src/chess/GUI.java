@@ -2,12 +2,14 @@
     Graphical user interface
  */
 
+package chess;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class GUI {
 
-    // Initialize GUI
+    // Initialize chess.GUI
     public GUI() {
         JFrame frame = new JFrame();
 

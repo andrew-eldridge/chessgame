@@ -4,6 +4,9 @@
     4/11/20
  */
 
+import chess.Board;
+import chess.GUI;
+
 public class ChessGame {
 
     public static void main(String[] args) {

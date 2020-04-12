@@ -2,6 +2,8 @@
     Queen piece
  */
 
+package chess;
+
 import java.util.Map;
 
 public class Queen implements Piece {
@@ -52,6 +54,7 @@ public class Queen implements Piece {
         Position[] horizontals = Position.getHorizontals(this, b);
         Position[] verticals = Position.getVerticals(this, b);
         Position[] diagonals = Position.getDiagonals(this, b);
+        return Position.combinePositionEnumerations(horizontals, verticals, diagonals);
     }
 
     // Indicates whether given piece is on opposing team
