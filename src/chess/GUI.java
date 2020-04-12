@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class GUI {
 
-    // Initialize chess.GUI
+    // Initialize GUI
     public GUI() {
         JFrame frame = new JFrame();
 

@@ -1,5 +1,5 @@
 /*
-    chess.Piece color constants
+    Piece color constants
  */
 
 package chess;

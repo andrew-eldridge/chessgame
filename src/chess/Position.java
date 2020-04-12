@@ -139,8 +139,8 @@ public class Position {
         Position start = p.getPosition();
         Map<Position, Piece> boardState = b.getBoardState();
 
-        // Populate ret with horizontals
-        Position[] ret = new Position[8];
+        // Populate horizontals
+        Position[] horizontals = new Position[8];
         boolean continueLeft = true;
         boolean continueRight = true;
         for (int i=1; i<Board.WIDTH; i++) {
@@ -154,31 +154,11 @@ public class Position {
                 rightCheckPos = new Position(start.x+i, start.y);
             }
             // Leftward horizontal check
-            if (leftCheckPos != null && isValid(leftCheckPos)) {
-                Piece leftCheckVal = boardState.get(leftCheckPos);
-                if (leftCheckVal == null) {
-                    // Empty space found leftward, append to next empty slot in ret
-                    appendToPositionArray(ret, leftCheckPos);
-                } else if (leftCheckVal.isOpposing(p)) {
-                    // Opposing piece found leftware, append to ret and indicate end of available leftward horizontals
-                    appendToPositionArray(ret, leftCheckPos);
-                    continueLeft = false;
-                }
-            }
+            continueLeft = checkBranchPos(horizontals, leftCheckPos, boardState, p);
             // Rightward horizontal check
-            if (rightCheckPos != null && isValid(rightCheckPos)) {
-                Piece rightCheckVal = boardState.get(rightCheckPos);
-                if (rightCheckVal == null) {
-                    // Empty space found leftward, append to next empty slot in ret
-                    appendToPositionArray(ret, rightCheckPos);
-                } else if (rightCheckVal.isOpposing(p)) {
-                    // Opposing piece found rightward, append to ret and indicate end of available rightward horizontals
-                    appendToPositionArray(ret, rightCheckPos);
-                    continueRight = false;
-                }
-            }
+            continueRight = checkBranchPos(horizontals, rightCheckPos, boardState, p);
         }
-        return ret;
+        return horizontals;
     }
 
     // Find vertical movements at a given position
@@ -190,48 +170,110 @@ public class Position {
         Position start = p.getPosition();
         Map<Position, Piece> boardState = b.getBoardState();
 
-        // Populate ret with horizontals
-        Position[] ret = new Position[8];
-        boolean continueLeft = true;
-        boolean continueRight = true;
-        for (int i=0; i<Board.WIDTH; i++) {
+        // Populate verticals
+        Position[] verticals = new Position[8];
+        boolean continueUp = true;
+        boolean continueDown = true;
+        for (int i=1; i<Board.HEIGHT; i++) {
             // Initialize positions to be checked
-            Position leftCheckPos = null;
-            Position rightCheckPos = null;
-            if (continueLeft) {
-                leftCheckPos = new Position(start.x-i, start.y);
+            Position upCheckPos = null;
+            Position downCheckPos = null;
+            if (continueUp && i<=limit) {
+                upCheckPos = new Position(start.x, start.y-i);
             }
-            if (continueRight) {
-                rightCheckPos = new Position(start.x+i, start.y);
+            if (continueDown && i<=limit) {
+                downCheckPos = new Position(start.x, start.y+i);
             }
-            // Leftward horizontal check
-            if (leftCheckPos != null && isValid(leftCheckPos)) {
-                Piece leftCheckVal = boardState.get(leftCheckPos);
-                if (leftCheckVal == null) {
-                    // Empty space found leftward, append to next empty slot in ret
-                    appendToPositionArray(ret, leftCheckPos);
-                } else if (leftCheckVal.isOpposing(p)) {
-                    // Opposing piece found leftware, append to ret and indicate end of available leftward horizontals
-                    appendToPositionArray(ret, leftCheckPos);
-                    continueLeft = false;
-                }
-            }
-            // Rightward horizontal check
-            if (rightCheckPos != null && isValid(rightCheckPos)) {
-                Piece rightCheckVal = boardState.get(rightCheckPos);
-                if (rightCheckVal == null) {
-                    // Empty space found leftward, append to next empty slot in ret
-                    appendToPositionArray(ret, rightCheckPos);
-                } else if (rightCheckVal.isOpposing(p)) {
-                    // Opposing piece found rightward, append to ret and indicate end of available rightward horizontals
-                    appendToPositionArray(ret, rightCheckPos);
-                    continueRight = false;
-                }
-            }
+            // Upward vertical check
+            continueUp = checkBranchPos(verticals, upCheckPos, boardState, p);
+            // Downward vertical check
+            continueDown = checkBranchPos(verticals, downCheckPos, boardState, p);
         }
-        return ret;
+        return verticals;
     }
 
+    // Find diagonal movements at a given position
+    public static Position[] getDiagonals(Piece p, Board b) {
+        return getDiagonals(p,  b, Board.HEIGHT);
+    }
+    public static Position[] getDiagonals(Piece p, Board b, int limit) {
+        // Populate both diagonals separately
+        Position[] leftDiagonal = getLeftDiagonals(p, b, limit);
+        Position[] rightDiagonal = getRightDiagonals(p, b, limit);
+
+        // Return combination of left and right diagonals
+        return combinePositionEnumerations(leftDiagonal, rightDiagonal);
+    }
+    private static Position[] getLeftDiagonals(Piece p, Board b, int limit) {
+        // Get piece position and board state
+        Position start = p.getPosition();
+        Map<Position, Piece> boardState = b.getBoardState();
+
+        // Populate left diagonal
+        Position[] leftDiagonals = new Position[8];
+        boolean continueUpLeft = true;
+        boolean continueDownRight = true;
+        for (int i=1; i<Board.DIAGONAL; i++) {
+            // Initialize positions to be checked
+            Position upLeftCheckPos = null;
+            Position downRightCheckPos = null;
+            if (continueUpLeft && i<=limit) {
+                upLeftCheckPos = new Position(start.x-i, start.y-i);
+            }
+            if (continueDownRight && i<=limit) {
+                downRightCheckPos = new Position(start.x+i, start.y+i);
+            }
+            // Upward vertical check
+            continueUpLeft = checkBranchPos(leftDiagonals, upLeftCheckPos, boardState, p);
+            // Downward vertical check
+            continueDownRight = checkBranchPos(leftDiagonals, downRightCheckPos, boardState, p);
+        }
+        return leftDiagonals;
+    }
+    private static Position[] getRightDiagonals(Piece p, Board b, int limit) {
+        // Get piece position and board state
+        Position start = p.getPosition();
+        Map<Position, Piece> boardState = b.getBoardState();
+
+        // Populate left diagonal
+        Position[] rightDiagonals = new Position[8];
+        boolean continueUpRight = true;
+        boolean continueDownLeft = true;
+        for (int i=1; i<Board.DIAGONAL; i++) {
+            // Initialize positions to be checked
+            Position upRightCheckPos = null;
+            Position downLeftCheckPos = null;
+            if (continueUpRight && i<=limit) {
+                upRightCheckPos = new Position(start.x+i, start.y-i);
+            }
+            if (continueDownLeft && i<=limit) {
+                downLeftCheckPos = new Position(start.x-i, start.y+i);
+            }
+            // Upward vertical check
+            continueUpRight = checkBranchPos(rightDiagonals, upRightCheckPos, boardState, p);
+            // Downward vertical check
+            continueDownLeft = checkBranchPos(rightDiagonals, downLeftCheckPos, boardState, p);
+        }
+        return rightDiagonals;
+    }
+
+    // Check position in branch, append the position to ret if it is available, and indicate whether the path should be continued
+    private static boolean checkBranchPos(Position[] posEnum, Position checkPos, Map<Position, Piece> boardState, Piece p) {
+        if (checkPos != null && isValid(checkPos)) {
+            Piece checkVal = boardState.get(checkPos);
+            if (checkVal == null) {
+                // Empty space found, append to next empty slot in ret
+                appendToPositionArray(posEnum, checkPos);
+            } else if (checkVal.isOpposing(p)) {
+                // Opposing piece found, append to ret and indicate end of available positions
+                appendToPositionArray(posEnum, checkPos);
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+    
     // Append position value to next empty space in array
     private static void appendToPositionArray(Position[] arr, Position pos) {
         for (int i=0; i<arr.length; i++) {

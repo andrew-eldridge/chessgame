@@ -9,9 +9,10 @@ import java.util.HashMap;
 
 public class Board {
 
-    // chess.Board dimensions
+    // Board dimensions
     public static final int WIDTH = 8;
     public static final int HEIGHT = 8;
+    public static final int DIAGONAL = 8;
 
     // Instanced variables
     private Map<Position, Piece> board;

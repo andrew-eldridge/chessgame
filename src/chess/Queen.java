@@ -4,6 +4,7 @@
 
 package chess;
 
+import javax.lang.model.type.ErrorType;
 import java.util.Map;
 
 public class Queen implements Piece {
@@ -16,14 +17,14 @@ public class Queen implements Piece {
     private Position position;
 
     // Constructor
-    public Queen(String color) {
+    public Queen(String color) throws InvalidPieceColorError {
         setColor(color);
         if (color.equals(Color.WHITE)) {
             setPosition(Position.D1);
         } else if (color.equals(Color.BLACK)) {
             setPosition(Position.D8);
         } else {
-            setPosition(Position.DEFAULT);
+            throw new InvalidPieceColorError(color);
         }
     }
 
