@@ -2,7 +2,7 @@
     Error to be thrown when a piece is initialized with an invalid color
  */
 
-package chess;
+package chess.errors;
 
 public class InvalidPieceColorError extends Error {
 

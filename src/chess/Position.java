@@ -4,6 +4,8 @@
 
 package chess;
 
+import chess.pieces.Piece;
+
 import java.util.Map;
 
 public class Position {
@@ -128,6 +130,16 @@ public class Position {
         } else {
             this.y = y;
         }
+    }
+
+    // Determine whether a given position is valid
+    public boolean isValid () {
+        return this.x>=DIR_MIN && this.x<=DIR_MAX && this.y>=DIR_MIN && this.y<=DIR_MAX;
+    }
+
+    // Equivalency test between two positions
+    public boolean equals(Position pos) {
+        return this.x == pos.x && this.y == pos.y;
     }
 
     // Find horizontal movements at a given position
@@ -259,21 +271,24 @@ public class Position {
 
     // Check position in branch, append the position to ret if it is available, and indicate whether the path should be continued
     private static boolean checkBranchPos(Position[] posEnum, Position checkPos, Map<Position, Piece> boardState, Piece p) {
-        if (checkPos != null && isValid(checkPos)) {
+        if (checkPos != null && checkPos.isValid()) {
             Piece checkVal = boardState.get(checkPos);
             if (checkVal == null) {
                 // Empty space found, append to next empty slot in ret
                 appendToPositionArray(posEnum, checkPos);
+                return true;
             } else if (checkVal.isOpposing(p)) {
                 // Opposing piece found, append to ret and indicate end of available positions
                 appendToPositionArray(posEnum, checkPos);
                 return false;
+            } else {
+                // Non-opposing piece found, indicate end of available positions
+                return false;
             }
-            return true;
         }
         return false;
     }
-    
+
     // Append position value to next empty space in array
     private static void appendToPositionArray(Position[] arr, Position pos) {
         for (int i=0; i<arr.length; i++) {
@@ -308,11 +323,6 @@ public class Position {
             }
         }
         return ret;
-    }
-
-    // Determine whether a given position is valid
-    private static boolean isValid (Position pos) {
-        return pos.x>=DIR_MIN && pos.x<=DIR_MAX && pos.y>=DIR_MIN && pos.y<=DIR_MAX;
     }
 
     // Determine whether there are any more positions left/right/up/down from given position
